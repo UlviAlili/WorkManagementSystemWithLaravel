@@ -12,16 +12,7 @@
 
         <div class="card-body">
 
-            @if($errors->any())
-                <div class="alert alert-danger">
-                    @foreach($errors->all() as $error)
-                        <li>{{$error}}</li>
-                    @endforeach
-                </div>
-            @endif
-
-            <form method="post" action="{{route('postChangePass',\Illuminate\Support\Facades\Auth::user()->id)}}"
-                  enctype="multipart/form-data">
+            <form method="post" id="FrmChangePass" enctype="multipart/form-data">
                 @csrf
 
                 <div class="row">
@@ -36,7 +27,7 @@
                         <div class="form-group">
                             <label>New Password</label>
                             <input type="password" name="password" class="form-control">
-                            <small class="text-muted">
+                            <small class="text-muted ml-1">
                                 Use 6 or more characters with a mix of letters and numbers.
                             </small>
                         </div>
@@ -51,11 +42,49 @@
                 </div>
 
                 <div class="form-group">
-                    <button type="submit" class="btn btn-warning">Change Password</button>
+                    <button type="submit" class="btn btn-warning" id="mySubmit">Change Password &nbsp;<span
+                            class="myLoad"></span></button>
                 </div>
 
             </form>
         </div>
     </div>
 
+@endsection
+@section('js')
+    <script>
+        $(function () {
+            $('#FrmChangePass').submit(function (e) {
+                e.preventDefault();
+                $('.myLoad').html('<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>');
+                $('#mySubmit').prop('disabled', true);
+                let myData = $(this).serialize();
+                $.ajax({
+                    method: 'post',
+                    url: '{{route('postChangePass',\Illuminate\Support\Facades\Auth::user()->id)}}',
+                    data: myData,
+                    success: function (response) {
+                        $('.myLoad').html('');
+                        $('#mySubmit').prop('disabled', false);
+                        window.location.href = response.url;
+                    },
+                    error: function (response) {
+                        $('#FrmChangePass').find('.text-danger').remove();
+                        $('.myLoad').html('');
+                        $('#mySubmit').prop('disabled', false);
+                        $.each(response.responseJSON.errors, function (key, value) {
+                            let input = $('#FrmChangePass').find('input[name^=' + key + ']')
+                            if (value.length > 1) {
+                                $.each(value, function (index, message) {
+                                    input.parents('.form-group').append(`<small class="row text-danger ml-1">${message}</small>`)
+                                })
+                            } else {
+                                input.parents('.form-group').append(`<small class="row text-danger ml-1">${value}</small>`)
+                            }
+                        });
+                    }
+                });
+            });
+        });
+    </script>
 @endsection

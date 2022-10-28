@@ -10,7 +10,7 @@
         </div>
 
         <div class="card-body">
-            <form method="post" action="{{route('admin.addUser.store')}}" enctype="multipart/form-data">
+            <form method="post" id="FrmAddUser" enctype="multipart/form-data">
                 @csrf
 
                 <div class="row">
@@ -18,15 +18,6 @@
                         <div class="form-group">
                             <label>Full Name</label>
                             <input type="text" name="name" class="form-control" value="{{old('name')}}">
-
-                            @if($errors->any())
-                                @foreach($errors->all() as $error)
-                                    @if(str_contains($error,'Full Name'))
-                                        <small class="text-danger">{{$error}}</small>
-                                    @endif
-                                @endforeach
-                            @endif
-
                         </div>
                     </div>
                 </div>
@@ -36,15 +27,6 @@
                         <div class="form-group">
                             <label>Email</label>
                             <input type="email" name="email" class="form-control" value="{{old('email')}}">
-
-                            @if($errors->any())
-                                @foreach($errors->all() as $error)
-                                    @if(str_contains($error,'Email'))
-                                        <small class="text-danger">{{$error}}</small>
-                                    @endif
-                                @endforeach
-                            @endif
-
                         </div>
                     </div>
                 </div>
@@ -55,15 +37,7 @@
                             <label>Password</label>
                             <input type="password" name="password" class="form-control">
 
-                            @if($errors->any())
-                                @foreach($errors->all() as $error)
-                                    @if(str_contains($error,'Password'))
-                                        <small class="text-danger">{{$error}} <br></small>
-                                    @endif
-                                @endforeach
-                            @endif
-
-                            <small class="text-muted">
+                            <small class="text-muted ml-1">
                                 Use 6 or more characters with a mix of letters and numbers.
                             </small>
                         </div>
@@ -73,24 +47,54 @@
                         <div class="form-group">
                             <label>Repeat Password</label>
                             <input type="password" name="password_confirmation" class="form-control">
-
-                            @if($errors->any())
-                                @foreach($errors->all() as $error)
-                                    @if(str_contains($error,'Password'))
-                                        <small class="text-danger">{{$error}} <br></small>
-                                    @endif
-                                @endforeach
-                            @endif
-
                         </div>
                     </div>
                 </div>
 
                 <div class="form-group">
-                    <button type="submit" class="btn btn-primary btn-block">Create User</button>
+                    <button type="submit" class="btn btn-primary btn-block" id="mySubmit">Create User &nbsp; <span
+                            class="myLoad"></span></button>
                 </div>
             </form>
         </div>
     </div>
 
+@endsection
+
+@section('js')
+    <script>
+        $(function () {
+            $('#FrmAddUser').submit(function (e) {
+                e.preventDefault();
+                $('.myLoad').html('<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>');
+                $('#mySubmit').prop('disabled', true);
+                let myData = $(this).serialize();
+                $.ajax({
+                    method: 'post',
+                    url: '{{route('admin.addUser.store')}}',
+                    data: myData,
+                    success: function (response) {
+                        $('.myLoad').append('');
+                        $('#mySubmit').prop('disabled', false);
+                        window.location.href = response.url;
+                    },
+                    error: function (response) {
+                        $('#FrmAddUser').find('.text-danger').remove();
+                        $('.myLoad').html('');
+                        $('#mySubmit').prop('disabled', false);
+                        $.each(response.responseJSON.errors, function (key, value) {
+                            let input = $('#FrmAddUser').find('input[name^=' + key + ']')
+                            if (value.length > 1) {
+                                $.each(value, function (index, message) {
+                                    input.parents('.form-group').append(`<small class="row text-danger ml-1">${message}</small>`)
+                                })
+                            } else {
+                                input.parents('.form-group').append(`<small class="row text-danger ml-1">${value}</small>`)
+                            }
+                        });
+                    }
+                });
+            });
+        });
+    </script>
 @endsection

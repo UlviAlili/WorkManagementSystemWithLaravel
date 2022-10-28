@@ -18,7 +18,8 @@
                 </div>
             @endif
 
-            <form method="post" action="{{route('admin.project.store')}}" enctype="multipart/form-data">
+            <form method="post" id="FrmAddProject"
+                  enctype="multipart/form-data">
                 @csrf
 
                 <div class="row">
@@ -56,7 +57,8 @@
                     <textarea id="editor" name="contents" class="form-control" rows="4"></textarea>
                 </div>
                 <div class="form-group">
-                    <button type="submit" class="btn btn-primary btn-block">Create Project</button>
+                    <button type="submit" class="btn btn-primary btn-block" id="mySubmit">Create Project &nbsp;<span
+                            class="myLoad"></span></button>
                 </div>
             </form>
         </div>
@@ -77,8 +79,40 @@
     <script>
         $(document).ready(function () {
             $('#editor').summernote(
-                {'height': 300}
+                {'height': 200}
             );
         });
+    </script>
+    <script>
+        $(function () {
+            $('#FrmAddProject').submit(function (e) {
+                e.preventDefault();
+                $('.myLoad').html('<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>');
+                $('#mySubmit').prop('disabled', true);
+                let myData = $(this).serialize();
+                $.ajax({
+                    method: 'post',
+                    url: '{{route('admin.project.store')}}',
+                    data: myData,
+                    success: function (response) {
+                        $('.myLoad').html('');
+                        $('#mySubmit').prop('Disabled', false);
+                        window.location.href = response.url;
+                    },
+                    error: function (response) {
+                        $('#FrmAddProject').find('.text-danger').remove();
+                        $('.myLoad').html('');
+                        $('#mySubmit').prop('disabled', false);
+                        $.each(response.responseJSON.errors, function (key, value) {
+                            let input = $('#FrmAddProject').find('input[name^=' + key + ']');
+                            let input2 = $('#FrmAddProject').find('textarea[name^=' + key + ']');
+                            input.parents('.form-group').append(`<small class="row text-danger ml-1">${value}</small>`);
+                            input2.parents('.form-group').append(`<small class="row text-danger ml-1">${value}</small>`);
+                        });
+                    }
+                });
+            });
+        });
+
     </script>
 @endsection

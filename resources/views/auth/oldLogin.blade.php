@@ -12,17 +12,35 @@
     <title>Work Management System - Login</title>
 
     <!-- Custom fonts for this template-->
-    <link href="{{asset('/back/vendor/fontawesome-free/css/all.min.css')}}" rel="stylesheet" type="text/css">
+    <link href="{{asset('/back')}}/vendor/fontawesome-free/css/all.min.css" rel="stylesheet" type="text/css">
     <link
         href="https://fonts.googleapis.com/css?family=Nunito:200,200i,300,300i,400,400i,600,600i,700,700i,800,800i,900,900i"
         rel="stylesheet">
 
     <!-- Custom styles for this template-->
-    <link href="{{asset('/back/css/sb-admin-2.min.css')}}" rel="stylesheet">
+    <link href="{{asset('/back')}}/css/sb-admin-2.min.css" rel="stylesheet">
 
+
+    <script src="{{asset('/back')}}/vendor/jquery/jquery.min.js"></script>
+
+{{--    <script>--}}
+{{--        $(function () {--}}
+{{--            $("p").on("click",function () {--}}
+{{--                $(this).animate({fontSize:"+=10px"});--}}
+{{--                // alert('P setri');--}}
+{{--            });--}}
+{{--        });--}}
+{{--    </script>--}}
 </head>
 
 <body class="bg-gradient-primary">
+{{--<body class="bg-gradient">--}}
+
+{{--<h1 class="test">Hello World</h1>--}}
+{{--<p id="test">First Task</p>--}}
+{{--<p class="test">Second Project</p>--}}
+{{--<p>Third Work</p>--}}
+{{--<button type="button">Submit</button>--}}
 
 <div class="container">
 
@@ -40,11 +58,11 @@
                                     <h1 class="h4 text-gray-900 mb-4">Welcome Back!</h1>
                                 </div>
 
-                                @if(session('wrong'))
-                                    <div class="alert alert-danger">{{session('wrong')}}</div>
+                                @if(session('success'))
+                                    <div class="alert alert-success">{{session('success')}}</div>
                                 @endif
 
-                                <form class="user" method="post" id="FrmLogin">
+                                <form class="user" method="post" action="{{route('loginPost')}}">
                                     @csrf
                                     <div class="form-group row">
                                         <div class="col-sm-12 mb-3 mb-sm-0">
@@ -52,6 +70,15 @@
                                                    id="exampleInputEmail" aria-describedby="emailHelp"
                                                    placeholder="Enter Email Address...">
                                         </div>
+                                        @if($errors->any())
+                                            @foreach($errors->all() as $error)
+                                                @if(str_contains($error,'Email Address'))
+                                                    <small class="text-danger ml-4">{{$error}}</small>
+                                                @elseif(str_contains($error,'credentials'))
+                                                    <small class="text-danger ml-4">{{$error}}</small>
+                                                @endif
+                                            @endforeach
+                                        @endif
                                     </div>
 
                                     <div class="form-group row">
@@ -60,6 +87,13 @@
                                                    class="form-control form-control-user"
                                                    id="exampleInputPassword" placeholder="Password">
                                         </div>
+                                        @if($errors->any())
+                                            @foreach($errors->all() as $error)
+                                                @if(str_contains($error,'Password'))
+                                                    <small class="text-danger ml-4">{{$error}}</small>
+                                                @endif
+                                            @endforeach
+                                        @endif
                                     </div>
 
                                     <div class="form-group">
@@ -71,8 +105,8 @@
                                         </div>
                                     </div>
 
-                                    <button type="submit" class="btn btn-primary btn-user btn-block" id="mySubmit">
-                                        Login &nbsp; <span class="myLoad"></span>
+                                    <button type="submit" class="btn btn-primary btn-user btn-block">
+                                        Login
                                     </button>
                                 </form>
                                 <hr>
@@ -88,47 +122,15 @@
     </div>
 </div>
 
+<!-- Bootstrap core JavaScript-->
+<script src="{{asset('/back')}}/vendor/bootstrap/js/bootstrap.bundle.min.js"></script>
 
 <!-- Core plugin JavaScript-->
-<script src="{{asset('/back/vendor/jquery/jquery.min.js')}}"></script>
-<script src="{{asset('/back/vendor/jquery-easing/jquery.easing.min.js')}}"></script>
+<script src="{{asset('/back')}}/vendor/jquery-easing/jquery.easing.min.js"></script>
 
-<!-- Bootstrap core JavaScript-->
-<script src="{{asset('/back/vendor/bootstrap/js/bootstrap.bundle.min.js')}}"></script>
 <!-- Custom scripts for all pages-->
-<script src="{{asset('/back/js/sb-admin-2.min.js')}}"></script>
+<script src="{{asset('/back')}}/js/sb-admin-2.min.js"></script>
 
-<script>
-    $(function () {
-        $("#FrmLogin").submit(function (e) {
-            e.preventDefault();
-            $(".myLoad").html('<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>');
-            $("#mySubmit").prop("disabled", true);
-
-            let myData = $(this).serialize();
-            $.ajax({
-                method: "post",
-                url: "{{route('loginPost')}}",
-                data: myData,
-                success: function (response) {
-                    $(".myLoad").html("");
-                    $("#mySubmit").prop("disabled", false);
-                    window.location.href = response.url;
-                },
-                error: function (response) {
-                    $('#FrmLogin').find('.text-danger').remove();
-                    $(".myLoad").html("");
-                    $("#mySubmit").prop("disabled", false);
-                    $.each(response.responseJSON.errors, function (key, value) {
-                        let input = $('#FrmLogin').find('input[name^=' + key + ']');
-                        input.parents('.form-group').append(`<small class="text-danger ml-4">${value}</small>`)
-                    });
-                    // console.log(response.responseJSON)
-                }
-            });
-        });
-    });
-</script>
 
 </body>
 </html>

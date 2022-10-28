@@ -68,22 +68,24 @@
             <div class="mb-4">
                 <div class="card border-left-primary shadow h-100 py-2">
                     <div class="card-body">
-                        <div class="row no-gutters align-items-center">
-                            <div class="col mr-2">
+                        <a href="{{route('admin.project.index')}}" class="text-decoration-none">
+                            <div class="row no-gutters align-items-center">
+                                <div class="col mr-2">
 
-                                <div class="text-xs font-weight-bold text-primary text-uppercase mb-1">
-                                    Total Projects
+                                    <div class="text-xs font-weight-bold text-primary text-uppercase mb-1">
+                                        Total Projects
+                                    </div>
+
+                                    <div class="h5 mb-0 font-weight-bold text-gray-800">
+                                        {{$projects->count()}}
+                                    </div>
+
                                 </div>
-
-                                <div class="h5 mb-0 font-weight-bold text-gray-800">
-                                    {{$projects->count()}}
+                                <div class="col-auto">
+                                    <i class="fas fa-layer-group fa-2x text-gray-300"></i>
                                 </div>
-
                             </div>
-                            <div class="col-auto">
-                                <i class="fas fa-layer-group fa-2x text-gray-300"></i>
-                            </div>
-                        </div>
+                        </a>
                     </div>
                 </div>
             </div>
@@ -91,22 +93,24 @@
             <div class="mb-4">
                 <div class="card border-left-primary shadow h-100 py-2">
                     <div class="card-body">
-                        <div class="row no-gutters align-items-center">
-                            <div class="col mr-2">
+                        <a href="{{route('admin.task.index')}}" class="text-decoration-none">
+                            <div class="row no-gutters align-items-center">
+                                <div class="col mr-2">
 
-                                <div class="text-xs font-weight-bold text-primary text-uppercase mb-1">
-                                    Total Tasks
+                                    <div class="text-xs font-weight-bold text-primary text-uppercase mb-1">
+                                        Total Tasks
+                                    </div>
+
+                                    <div class="h5 mb-0 font-weight-bold text-gray-800">
+                                        {{$tasks->count()}}
+                                    </div>
+
                                 </div>
-
-                                <div class="h5 mb-0 font-weight-bold text-gray-800">
-                                    {{$tasks->count()}}
+                                <div class="col-auto">
+                                    <i class="fas fa-tasks fa-2x text-gray-300"></i>
                                 </div>
-
                             </div>
-                            <div class="col-auto">
-                                <i class="fas fa-tasks fa-2x text-gray-300"></i>
-                            </div>
-                        </div>
+                        </a>
                     </div>
                 </div>
             </div>
@@ -114,22 +118,24 @@
             <div class="mb-4">
                 <div class="card border-left-primary shadow h-100 py-2">
                     <div class="card-body">
-                        <div class="row no-gutters align-items-center">
-                            <div class="col mr-2">
+                        <a href="{{route('admin.addUser.index')}}" class="text-decoration-none">
+                            <div class="row no-gutters align-items-center">
+                                <div class="col mr-2">
 
-                                <div class="text-xs font-weight-bold text-primary text-uppercase mb-1">
-                                    Total Team Members
+                                    <div class="text-xs font-weight-bold text-primary text-uppercase mb-1">
+                                        Total Team Members
+                                    </div>
+
+                                    <div class="h5 mb-0 font-weight-bold text-gray-800">
+                                        {{$users->count()}}
+                                    </div>
+
                                 </div>
-
-                                <div class="h5 mb-0 font-weight-bold text-gray-800">
-                                    {{$users->count()}}
+                                <div class="col-auto">
+                                    <i class="fas fa-users fa-2x text-gray-300"></i>
                                 </div>
-
                             </div>
-                            <div class="col-auto">
-                                <i class="fas fa-users fa-2x text-gray-300"></i>
-                            </div>
-                        </div>
+                        </a>
                     </div>
                 </div>
             </div>

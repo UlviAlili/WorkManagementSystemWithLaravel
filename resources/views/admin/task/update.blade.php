@@ -19,7 +19,7 @@
                 </div>
             @endif
 
-            <form method="post" action="{{route('admin.task.update',$task->id)}}" enctype="multipart/form-data">
+            <form method="post" id="FrmUpdateTask" enctype="multipart/form-data">
                 @csrf
                 @method('PUT')
 
@@ -27,7 +27,7 @@
                     <div class="col-md-12">
                         <div class="form-group">
                             <label>Task Name</label>
-                            <input type="text" name="title" class="form-control" value="{{$task->name}}" required>
+                            <input type="text" name="title" class="form-control" value="{{$task->name}}">
                         </div>
                     </div>
                 </div>
@@ -56,7 +56,8 @@
                               rows="4">{{$task->description}}</textarea>
                 </div>
                 <div class="form-group">
-                    <button type="submit" class="btn btn-primary btn-block">Update Task</button>
+                    <button type="submit" class="btn btn-primary btn-block" id="mySubmit">Update Task &nbsp;<span
+                            class="myLoad"></span></button>
                 </div>
             </form>
         </div>
@@ -75,6 +76,37 @@
             $('#editor').summernote(
                 {'height': 300}
             );
+        });
+    </script>
+    <script>
+        $(function () {
+            $('#FrmUpdateTask').submit(function (e) {
+                e.preventDefault();
+                $('.myLoad').html('<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>');
+                $('#mySubmit').prop('Disabled', true);
+                let myData = $(this).serialize();
+                $.ajax({
+                    method: 'put',
+                    url: '{{route('admin.task.update',$task->id)}}',
+                    data: myData,
+                    success: function (response) {
+                        $('.myLoad').html('');
+                        $('#mySubmit').prop('Disabled', false);
+                        window.location.href = response.url;
+                    },
+                    error: function (response) {
+                        $('#FrmUpdateTask').find('.text-danger').remove();
+                        $('.myLoad').html('');
+                        $('#mySubmit').prop('Disabled', false);
+                        $.each(response.responseJSON.errors, function (key, value) {
+                            let input = $('#FrmUpdateTask').find('input[name^=' + key + ']');
+                            let input2 = $('#FrmUpdateTask').find('textarea[name^=' + key + ']');
+                            input.parents('.form-group').append(`<small class="row text-danger ml-1">${value}</small>`);
+                            input2.parents('.form-group').append(`<small class="row text-danger ml-1">${value}</small>`);
+                        });
+                    }
+                });
+            });
         });
     </script>
 @endsection

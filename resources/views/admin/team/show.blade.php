@@ -42,34 +42,35 @@
                     <div class="col-md-10">
                         <div class="card-body">
                             <div class="table-responsive">
-                                <table class="table table-bordered" id="dataTable" width="100%" cellspacing="0">
+                                <table class="table table-bordered" id="showUser" width="100%" cellspacing="0">
                                     <thead>
                                     <tr>
-                                        <th>#</th>
+                                        <th>Id</th>
+                                        <th>Project Name</th>
                                         <th>Task Name</th>
                                         <th>Task Description</th>
                                         <th>Task Status</th>
-                                        <th>Task Member</th>
+                                        <th>Created At</th>
                                     </tr>
                                     </thead>
-                                    <tbody>
+                                    {{--                                    <tbody>--}}
 
-                                    @foreach($user->tasks()->get() as $task)
-                                        <tr>
-                                            <td>{{++$loop->index}}</td>
-                                            <td>{{$task->name}}</td>
-                                            <td>{!! $task->description !!}</td>
-                                            <td>
-                                                <div class="@if($task->status == 'Not Started') badge badge-primary
-                                            @elseif($task->status == 'In Progress') badge badge-warning
-                                            @elseif($task->status == 'Done') badge badge-success @endif">
-                                                    {{$task->status}}</div>
-                                            </td>
-                                            <td>{{$user->where('id',$task->user_id)->first()->name}}</td>
-                                        </tr>
-                                    @endforeach
+                                    {{--                                    @foreach($user->tasks()->get() as $task)--}}
+                                    {{--                                        <tr>--}}
+                                    {{--                                            <td>{{++$loop->index}}</td>--}}
+                                    {{--                                            <td>{{$task->name}}</td>--}}
+                                    {{--                                            <td>{!! $task->description !!}</td>--}}
+                                    {{--                                            <td>--}}
+                                    {{--                                                <div class="@if($task->status == 'Not Started') badge badge-primary--}}
+                                    {{--                                            @elseif($task->status == 'In Progress') badge badge-warning--}}
+                                    {{--                                            @elseif($task->status == 'Done') badge badge-success @endif">--}}
+                                    {{--                                                    {{$task->status}}</div>--}}
+                                    {{--                                            </td>--}}
+                                    {{--                                            <td>{{$user->where('id',$task->user_id)->first()->name}}</td>--}}
+                                    {{--                                        </tr>--}}
+                                    {{--                                    @endforeach--}}
 
-                                    </tbody>
+                                    {{--                                    </tbody>--}}
                                 </table>
                             </div>
                         </div>
@@ -79,4 +80,25 @@
         </div>
     </div>
 
+@endsection
+@section('js')
+    <script>
+        $(document).ready(function () {
+            $('#showUser').DataTable({
+                processing: true,
+                serverSide: true,
+                order: [[0, 'desc']],
+                {{--                @dd($user->id)--}}
+                ajax: '{{route('admin.show-dataTable-user',$user->id)}}',
+                columns: [
+                    {data: "id"},
+                    {data: "project"},
+                    {data: "name"},
+                    {data: "description"},
+                    {data: "status"},
+                    {data: "created_at"}
+                ]
+            });
+        });
+    </script>
 @endsection

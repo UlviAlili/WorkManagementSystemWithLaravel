@@ -10,15 +10,8 @@
         </div>
         <div class="card-body">
 
-            @if($errors->any())
-                <div class="alert alert-danger">
-                    @foreach($errors->all() as $error)
-                        <li>{{$error}}</li>
-                    @endforeach
-                </div>
-            @endif
-
-            <form method="post" action="{{route('admin.project.update',$project->id)}}" enctype="multipart/form-data">
+            <form method="post" id="FrmUpdateProject"
+                  enctype="multipart/form-data">
                 @csrf
                 @method('PUT')
 
@@ -26,7 +19,7 @@
                     <div class="col-md-6">
                         <div class="form-group">
                             <label>Project Name</label>
-                            <input type="text" name="title" class="form-control" value="{{$project->name}}" required>
+                            <input type="text" name="title" class="form-control" value="{{$project->name}}">
                         </div>
                     </div>
 
@@ -62,10 +55,11 @@
                 <div class="form-group">
                     <label>Project Description</label>
                     <textarea id="editor" name="contents" class="form-control"
-                              rows="4" required>{{$project->description}}</textarea>
+                              rows="4">{{$project->description}}</textarea>
                 </div>
                 <div class="form-group">
-                    <button type="submit" class="btn btn-primary btn-block">Update Project</button>
+                    <button type="submit" class="btn btn-primary btn-block" id="mySubmit">Update Project &nbsp;<span
+                            class="myLoad"></span></button>
                 </div>
             </form>
         </div>
@@ -88,6 +82,38 @@
             $('#editor').summernote(
                 {'height': 300}
             );
+        });
+    </script>
+
+    <script>
+        $(function () {
+            $('#FrmUpdateProject').submit(function (e) {
+                e.preventDefault();
+                $('.myLoad').html('<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>');
+                $('#mySubmit').prop('disabled', true);
+                let myData = $(this).serialize();
+                $.ajax({
+                    method: 'put',
+                    url: '{{route('admin.project.update',$project->id)}}',
+                    data: myData,
+                    success: function (response) {
+                        $('.myLoad').html('');
+                        $('#mySubmit').prop('disabled', false);
+                        window.location.href = response.url;
+                    },
+                    error: function (response) {
+                        $('#FrmUpdateProject').find('.text-danger').remove();
+                        $('.myLoad').html('');
+                        $('#mySubmit').prop('disabled', false);
+                        $.each(response.responseJSON.errors, function (key, value) {
+                            let input = $('#FrmUpdateProject').find('input[name^=' + key + ']');
+                            let input2 = $('#FrmUpdateProject').find('textarea[name^=' + key + ']');
+                            input.parents('.form-group').append(`<small class="row text-danger ml-1">${value}</small>`);
+                            input2.parents('.form-group').append(`<small class="row text-danger ml-1">${value}</small>`);
+                        });
+                    }
+                });
+            });
         });
     </script>
 @endsection

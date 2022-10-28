@@ -12,13 +12,13 @@
     <title>Work Management System - Register</title>
 
     <!-- Custom fonts for this template-->
-    <link href="{{asset('/back/vendor/fontawesome-free/css/all.min.css')}}" rel="stylesheet" type="text/css">
+    <link href="{{asset('/back')}}/vendor/fontawesome-free/css/all.min.css" rel="stylesheet" type="text/css">
     <link
         href="https://fonts.googleapis.com/css?family=Nunito:200,200i,300,300i,400,400i,600,600i,700,700i,800,800i,900,900i"
         rel="stylesheet">
 
     <!-- Custom styles for this template-->
-    <link href="{{asset('/back/css/sb-admin-2.min.css')}}" rel="stylesheet">
+    <link href="{{asset('/back')}}/css/sb-admin-2.min.css" rel="stylesheet">
 
 </head>
 
@@ -37,23 +37,39 @@
                                 <h1 class="h4 text-gray-900 mb-4">Create an Account!</h1>
                             </div>
 
-                            <form class="user" method="post" id="FrmRegister">
+                            <form class="user" method="post" action="{{route('registerPost')}}">
                                 @csrf
 
                                 <div class="form-group row">
                                     <div class="col-sm-12 mb-3 mb-sm-0">
                                         <input type="text" name="name" class="form-control form-control-user"
                                                id="exampleFullName"
-                                               placeholder="Full Name">
+                                               placeholder="Full Name" value="{{old('name')}}">
                                     </div>
+                                    @if($errors->any())
+                                        @foreach($errors->all() as $error)
+                                            @if(str_contains($error,'Full Name'))
+                                                <small class="text-danger ml-4">{{$error}}</small>
+                                                @break
+                                            @endif
+                                        @endforeach
+                                    @endif
                                 </div>
 
                                 <div class="form-group row">
                                     <div class="col-sm-12 mb-3 mb-sm-0">
                                         <input type="text" name="email" class="form-control form-control-user"
                                                id="exampleInputEmail"
-                                               placeholder="Email Address">
+                                               placeholder="Email Address" value="{{old('email')}}">
                                     </div>
+                                    @if($errors->any())
+                                        @foreach($errors->all() as $error)
+                                            @if(str_contains($error,'Email Address'))
+                                                <small class="text-danger ml-4">{{$error}}</small>
+                                                @break
+                                            @endif
+                                        @endforeach
+                                    @endif
                                 </div>
 
                                 <div class="form-group row">
@@ -62,7 +78,14 @@
                                                class="form-control form-control-user"
                                                id="exampleInputPassword" placeholder="Password">
                                     </div>
-
+                                    @if($errors->any())
+                                        @foreach($errors->all() as $error)
+                                            @if(str_contains($error,'Password'))
+                                                <small class="text-danger ml-4">{{$error}}</small>
+                                                @break
+                                            @endif
+                                        @endforeach
+                                    @endif
                                     <small class="text-muted ml-4">
                                         Use 6 or more characters with a mix of letters and numbers.
                                     </small>
@@ -74,10 +97,18 @@
                                                class="form-control form-control-user"
                                                id="exampleRepeatPassword" placeholder="Repeat Password">
                                     </div>
+                                    @if($errors->any())
+                                        @foreach($errors->all() as $error)
+                                            @if(str_contains($error,'Password'))
+                                                <small class="text-danger ml-4">{{$error}}</small>
+                                                @break
+                                            @endif
+                                        @endforeach
+                                    @endif
                                 </div>
 
-                                <button type="submit" class="btn btn-primary btn-user btn-block" id="mySubmit">
-                                    Register Account &nbsp; <span class="myLoad"></span>
+                                <button type="submit" class="btn btn-primary btn-user btn-block">
+                                    Register Account
                                 </button>
                             </form>
                             <hr>
@@ -93,52 +124,14 @@
 </div>
 
 <!-- Bootstrap core JavaScript-->
-<script src="{{asset('/back/vendor/jquery/jquery.min.js')}}"></script>
-<script src="{{asset('/back/vendor/bootstrap/js/bootstrap.bundle.min.js')}}"></script>
+<script src="{{asset('/back')}}/vendor/jquery/jquery.min.js"></script>
+<script src="{{asset('/back')}}/vendor/bootstrap/js/bootstrap.bundle.min.js"></script>
 
 <!-- Core plugin JavaScript-->
-<script src="{{asset('/back/vendor/jquery-easing/jquery.easing.min.js')}}"></script>
+<script src="{{asset('/back')}}/vendor/jquery-easing/jquery.easing.min.js"></script>
 
 <!-- Custom scripts for all pages-->
-<script src="{{asset('/back/js/sb-admin-2.min.js')}}"></script>
-
-<script>
-    $(function () {
-        $('#FrmRegister').submit(function (e) {
-            e.preventDefault()
-            $(".myLoad").html('<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>');
-            $("#mySubmit").prop("disabled", true);
-
-            let myData = $(this).serialize();
-            $.ajax({
-                method: "post",
-                url: "{{route('registerPost')}}",
-                data: myData,
-                success: function (response) {
-                    $(".myLoad").html("");
-                    $("#mySubmit").prop("disabled", false);
-                    window.location.href = response.url;
-                },
-                error: function (response) {
-                    $('#FrmRegister').find('.text-danger').remove()
-                    $(".myLoad").html("");
-                    $("#mySubmit").prop("disabled", false);
-                    $.each(response.responseJSON.errors, function (key, value) {
-                        let input = $('#FrmRegister').find('input[name^=' + key + ']')
-                        if (value.length > 1) {
-                            $.each(value, function (index, message) {
-                                input.parents('.form-group').append(`<small class="row text-danger ml-4">${message}</small>`)
-                            })
-                        } else {
-                            input.parents('.form-group').append(`<small class="text-danger ml-4">${value}</small>`)
-                        }
-                    });
-                    // console.log(response.responseJSON)
-                }
-            });
-        });
-    });
-</script>
+<script src="{{asset('/back')}}/js/sb-admin-2.min.js"></script>
 
 </body>
 </html>

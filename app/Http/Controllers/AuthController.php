@@ -22,14 +22,15 @@ class AuthController extends Controller
     public function loginPost(LoginRequest $request)
     {
         if (Auth::attempt(['email' => $request->email, 'password' => $request->password], $request->remember)) {
+            session()->flash('message', 'Welcome back ' . Auth::user()->name);
             if (Auth::user()->status == 'admin') {
-                return redirect()->route('admin.dashboard')->with('message', 'Welcome back ' . Auth::user()->name);
+                return response()->json(['url' => route('admin.dashboard')]);
             } else {
-                return redirect()->route('user.dashboard')->with('message', 'Welcome back ' . Auth::user()->name);
+                return response()->json(['url' => route('user.dashboard')]);
             }
         }
-
-        return redirect()->route('login')->withErrors('These credentials do not match our records.');
+        session()->flash('wrong','These credentials do not match our records.');
+        return response()->json(['url' => route('login')]);
     }
 
     public function registerPost(RegisterRequest $request)
@@ -41,8 +42,9 @@ class AuthController extends Controller
             'status' => 'admin',
             'password' => bcrypt($validated['password'])
         ]);
-
-        return redirect()->route('login')->with('success', 'Registration Successfully');
+        Auth::attempt(['email' => $request->email, 'password' => $request->password]);
+        session()->flash('message', 'Welcome ' . Auth::user()->name);
+        return response()->json(['url' => route('admin.dashboard')]);
     }
 
     public function logout()

@@ -8,22 +8,50 @@ use App\Models\Comment;
 use App\Models\Project;
 use App\Models\Task;
 use Illuminate\Support\Facades\Auth;
+use Yajra\DataTables\Facades\DataTables;
 
 class DashboardController extends Controller
 {
     public function index()
     {
-        $tasks = Task::where('user_id', Auth::user()->id)->get();
+        $tasks = Task::where('user_id', Auth::user()->id)->orderBy('created_at', 'desc')->get();
         $project = Project::all();
 
         return view('user.dashboard', compact('tasks', 'project'));
+    }
+
+    public function indexDataTable()
+    {
+        $tasks = Task::where('user_id', Auth::user()->id)->get();
+        $project = Project::all();
+
+        return DataTables::of($tasks)
+            ->editColumn('created_at', function (Task $task) {
+                return $task->created_at->diffForHumans();
+            })
+            ->editColumn('status', function (Task $task) {
+                if ($task->status == "Not Started") {
+                    $status = 'badge bg-primary';
+                } elseif ($task->status == "In Progress") {
+                    $status = 'badge bg-warning';
+                } elseif ($task->status == "Done") {
+                    $status = 'badge bg-success';
+                }
+                return "<div class ='" . $status . " text-light'>" . $task->status . "</div>";
+            })
+            ->addColumn('project', function (Task $task) {
+                return Project::where('id', $task->project_id)->first()->name;
+            })
+            ->editColumn('operations', 'user/task/operations')
+            ->rawColumns(['status', 'description', 'operations'])
+            ->make(true);
     }
 
     public function task()
     {
         $tasks = Task::orderBy('created_at', 'desc')->where('user_id', Auth::user()->id)->get();
 
-        return view('user.task', compact('tasks'));
+        return view('user.task.task', compact('tasks'));
     }
 
     public function taskStatus($id)
@@ -31,7 +59,7 @@ class DashboardController extends Controller
         if (Task::where('user_id', Auth::user()->id)->first() !== null) {
             $task = Task::findOrFail($id);
 
-            return view('user.taskStatus', compact('task'));
+            return view('user.task.taskStatus', compact('task'));
         } else {
             return view('user.dashboard');
         }
@@ -42,7 +70,7 @@ class DashboardController extends Controller
         if (Task::where('user_id', Auth::user()->id)->first() !== null) {
             $task = Task::findOrFail($id);
 
-            return view('user.update', compact('task'));
+            return view('user.task.update', compact('task'));
         } else {
             return view('user.dashboard');
         }
