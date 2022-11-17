@@ -17,7 +17,7 @@ class DashboardController extends Controller
         $userTask = Task::where('user_id', Auth::user()->id)->get();
 
         $projects = Project::all();
-        $userProject = null;
+        $userProject = (array)null;
         foreach ($projects as $project) {
             foreach ($project->users->pluck('id')->toArray() as $id) {
                 if ($id == Auth::user()->id) {
@@ -32,7 +32,7 @@ class DashboardController extends Controller
     public function indexDataTable()
     {
         $projects = Project::all();
-        $userProject = null;
+        $userProject = (array)null;
         foreach ($projects as $project) {
             foreach ($project->users->pluck('id')->toArray() as $id) {
                 if ($id == Auth::user()->id) {
