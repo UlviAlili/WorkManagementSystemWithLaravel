@@ -133,7 +133,6 @@
                             input.parents('.form-group').append(`<small class="text-danger ml-4">${value}</small>`)
                         }
                     });
-                    // console.log(response.responseJSON)
                 }
             });
         });

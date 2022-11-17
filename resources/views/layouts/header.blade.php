@@ -19,11 +19,15 @@
 
     <!-- Custom styles for this template-->
     <link href="{{asset('/back/css/sb-admin-2.min.css')}}" rel="stylesheet">
-    {{--        <link href="{{asset('back/vendor/datatables/dataTables.bootstrap4.min.css')}}" rel="stylesheet">--}}
     <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/1.12.1/css/dataTables.bootstrap5.min.css"/>
-    {{--            <link rel="stylesheet" href="https://cdn.datatables.net/1.12.1/css/jquery.dataTables.min.css">--}}
     @yield('css')
     <link rel="stylesheet" type="text/css"
           href="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.css">
 
+    <style>
+        .project-scroll {
+            max-height: 659px;
+            overflow-y: auto;
+        }
+    </style>
 </head>

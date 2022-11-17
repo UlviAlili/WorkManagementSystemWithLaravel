@@ -29,7 +29,8 @@ class AuthController extends Controller
                 return response()->json(['url' => route('user.dashboard')]);
             }
         }
-        session()->flash('wrong','These credentials do not match our records.');
+
+        session()->flash('wrong', "These credentials don't match our records");
         return response()->json(['url' => route('login')]);
     }
 
@@ -43,6 +44,7 @@ class AuthController extends Controller
             'password' => bcrypt($validated['password'])
         ]);
         Auth::attempt(['email' => $request->email, 'password' => $request->password]);
+
         session()->flash('message', 'Welcome ' . Auth::user()->name);
         return response()->json(['url' => route('admin.dashboard')]);
     }

@@ -17,10 +17,10 @@ class DatabaseSeeder extends Seeder
         // \App\Models\User::factory(10)->create.blade.php();
 
         \App\Models\User::factory()->create([
-            'name' => 'Ulvi Alili',
-            'email' => 'ulvi96alili@gmail.com',
-            'status' => 'admin',
-            'password' => bcrypt('Alili1907'),
+//            'name' => 'Ulvi Alili',
+//            'email' => 'ulvi96alili@gmail.com',
+//            'status' => 'admin',
+//            'password' => bcrypt('Alili1907'),
         ]);
     }
 }

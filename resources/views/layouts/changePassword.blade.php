@@ -4,7 +4,7 @@
 
     <div class="card shadow mb-4">
         <div class="card-header py-3">
-            <h6 class="m-0 font-weight-bold float-left text-primary">@yield('title')</h6>
+            <small class="text-danger mt-2 float-left">* &nbsp;indicates a required field.</small>
             <h6 class="m-0 font-weight-bold float-right text-primary">
                 <a href="{{route('profile')}}" class="btn btn-primary btn-sm">Profile</a>
             </h6>
@@ -18,14 +18,14 @@
                 <div class="row">
                     <div class="col-md-12">
                         <div class="form-group">
-                            <label>Old Password</label>
+                            <label>Old Password<span style="color: red">*</span></label>
                             <input type="password" name="oldPassword" class="form-control">
                         </div>
                     </div>
 
                     <div class="col-md-12">
                         <div class="form-group">
-                            <label>New Password</label>
+                            <label>New Password<span style="color: red">*</span></label>
                             <input type="password" name="password" class="form-control">
                             <small class="text-muted ml-1">
                                 Use 6 or more characters with a mix of letters and numbers.
@@ -35,7 +35,7 @@
 
                     <div class="col-md-12">
                         <div class="form-group">
-                            <label>Repeat Password</label>
+                            <label>Repeat Password<span style="color: red">*</span></label>
                             <input type="password" name="password_confirmation" class="form-control">
                         </div>
                     </div>
@@ -66,7 +66,18 @@
                     success: function (response) {
                         $('.myLoad').html('');
                         $('#mySubmit').prop('disabled', false);
-                        window.location.href = response.url;
+                        toastr.options =
+                            {
+                                "closeButton": true,
+                                "progressBar": true
+                            }
+                        if (response.hasOwnProperty('error')) {
+                            toastr.error(response.error);
+                        } else {
+                            toastr.success(response.message);
+                            $('input[type="password"]').val('');
+                        }
+                        $('#FrmChangePass').find('.text-danger').remove();
                     },
                     error: function (response) {
                         $('#FrmChangePass').find('.text-danger').remove();

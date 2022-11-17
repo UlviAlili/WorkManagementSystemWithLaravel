@@ -27,7 +27,7 @@ class ProjectRequest extends FormRequest
             'title' => 'required|min:3|max:30|string',
             'status' => 'required',
             'member' => 'max:255',
-            'contents' => 'required|min:2'
+            'contents' => 'max:1000'
         ];
     }
 

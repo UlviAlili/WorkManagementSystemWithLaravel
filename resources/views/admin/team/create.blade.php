@@ -4,7 +4,7 @@
 
     <div class="card shadow mb-4">
         <div class="card-header py-3">
-            <h6 class="m-0 font-weight-bold float-left text-primary">@yield('title')</h6>
+            <small class="text-danger mt-2 float-left">* &nbsp;indicates a required field.</small>
             <h6 class="m-0 font-weight-bold float-right text-primary">
                 <a href="{{route('admin.addUser.index')}}" class="btn btn-primary btn-sm">All Team Members</a></h6>
         </div>
@@ -16,8 +16,8 @@
                 <div class="row">
                     <div class="col-md-12">
                         <div class="form-group">
-                            <label>Full Name</label>
-                            <input type="text" name="name" class="form-control" value="{{old('name')}}">
+                            <label>Full Name<span style="color: red">*</span></label>
+                            <input type="text" name="name" class="form-control">
                         </div>
                     </div>
                 </div>
@@ -25,8 +25,8 @@
                 <div class="row">
                     <div class="col-md-12">
                         <div class="form-group">
-                            <label>Email</label>
-                            <input type="email" name="email" class="form-control" value="{{old('email')}}">
+                            <label>Email<span style="color: red">*</span></label>
+                            <input type="text" name="email" class="form-control">
                         </div>
                     </div>
                 </div>
@@ -34,9 +34,8 @@
                 <div class="row">
                     <div class="col-md-6">
                         <div class="form-group">
-                            <label>Password</label>
+                            <label>Password<span style="color: red">*</span></label>
                             <input type="password" name="password" class="form-control">
-
                             <small class="text-muted ml-1">
                                 Use 6 or more characters with a mix of letters and numbers.
                             </small>
@@ -45,7 +44,7 @@
 
                     <div class="col-md-6">
                         <div class="form-group">
-                            <label>Repeat Password</label>
+                            <label>Repeat Password<span style="color: red">*</span></label>
                             <input type="password" name="password_confirmation" class="form-control">
                         </div>
                     </div>
@@ -55,10 +54,10 @@
                     <button type="submit" class="btn btn-primary btn-block" id="mySubmit">Create User &nbsp; <span
                             class="myLoad"></span></button>
                 </div>
+
             </form>
         </div>
     </div>
-
 @endsection
 
 @section('js')

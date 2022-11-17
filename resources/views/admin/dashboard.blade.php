@@ -3,17 +3,17 @@
 @section('content')
 
     <!-- Content Row -->
-
     <div class="row">
 
         <!-- Area Chart -->
         <div class="col-xl-8 col-lg-8">
             <div class="card shadow mb-4">
+
                 <!-- Card Header - Dropdown -->
-                <div
-                    class="card-header py-3 d-flex flex-row align-items-center justify-content-between">
+                <div class="card-header py-3 d-flex flex-row align-items-center justify-content-between">
                     <h6 class="m-0 font-weight-bold text-primary">Projects</h6>
                     <h6 class="m-0 font-weight-bold float-right text-primary">
+                        <a href="{{route('admin.project.index')}}" class="btn btn-primary btn-sm">All Projects</a>
                         <a href="{{route('admin.project.create')}}" class="btn btn-primary btn-sm">Create New
                             Project</a>
                     </h6>
@@ -27,7 +27,6 @@
                             <tr>
                                 <th>#</th>
                                 <th>Project Name</th>
-                                <th>Description</th>
                                 <th>Status</th>
                                 <th>Team Member's Count</th>
                                 <th>Task's Count</th>
@@ -36,11 +35,11 @@
                             </thead>
                             <tbody>
 
-                            @foreach($projects as $project)
+                            @php $task_count = 0; @endphp
+                            @foreach($projects->slice(0,5) as $project)
                                 <tr>
                                     <td>{{++$loop->index}}</td>
                                     <td>{{$project->name}}</td>
-                                    <td>{!! $project->description !!}</td>
                                     <td>
                                         <div class="@if($project->status == 'Not Started') badge badge-primary
                                             @elseif($project->status == 'In Progress') badge badge-warning
@@ -49,6 +48,7 @@
                                     </td>
                                     <td>{{$project->team_members}}</td>
                                     <td>{{$project->tasks()->count()}}</td>
+                                    @php $task_count += $project->tasks()->count(); @endphp
                                     <td>
                                         <a href="{{route('admin.project.show',$project->id)}}" title="View"
                                            class="btn btn-sm btn-success">View</a>
@@ -102,7 +102,7 @@
                                     </div>
 
                                     <div class="h5 mb-0 font-weight-bold text-gray-800">
-                                        {{$tasks->count()}}
+                                        {{$task_count}}
                                     </div>
 
                                 </div>

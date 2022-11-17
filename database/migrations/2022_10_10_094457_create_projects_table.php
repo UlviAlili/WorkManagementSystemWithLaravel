@@ -19,6 +19,7 @@ return new class extends Migration {
             $table->integer('status');
             $table->integer('team_members')->default(0);
             $table->text('description');
+            $table->softDeletes();
             $table->timestamps();
         });
     }

@@ -24,16 +24,14 @@ class CommentRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'status' => 'max:255',
-            'contents' => 'required'
+            'comments' => 'required'
         ];
     }
 
     public function attributes(): array
     {
         return [
-            'status' => 'Task Status',
-            'contents' => 'Task Comment'
+            'comments' => 'Task Comment'
         ];
     }
 }

@@ -12,10 +12,8 @@ use Illuminate\Contracts\Foundation\Application;
 use Illuminate\Contracts\View\Factory;
 use Illuminate\Contracts\View\View;
 use Illuminate\Http\JsonResponse;
-use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Yajra\DataTables\Facades\DataTables;
-use function Sodium\increment;
 
 class AddUserController extends Controller
 {
@@ -27,24 +25,21 @@ class AddUserController extends Controller
      */
     public function index()
     {
-        $id = Auth::user()->id;
-        $users = User::where('admin_id', $id)->get();
-
-        return view('admin.team.index', compact('users'));
+        return view('admin.team.index');
     }
 
     public function indexDataTable()
     {
-        $id = Auth::user()->id;
-        $data = User::where('admin_id', $id)->get();
-        return DataTables::of($data)
-            ->addColumn('task', function ($user) {
+        $user = User::where('admin_id', Auth::user()->id)->with('tasks')->get();
+
+        return DataTables::of($user)
+            ->addColumn('task', function (User $user) {
                 return $user->tasks->count();
             })
             ->editColumn('operations', 'admin/team/operations')
             ->rawColumns(['operations'])
             ->editColumn('created_at', function (User $user) {
-                return $user->created_at->diffForHumans();
+                return date('d/m/Y H:i:s', strtotime($user->created_at));
             })
             ->make(true);
     }
@@ -78,7 +73,6 @@ class AddUserController extends Controller
 
         session()->flash('message', 'User Added Successfully');
         return response()->json(["url" => route("admin.addUser.index")]);
-//        return redirect()->route('admin.addUser.index')->with('message', 'User Added Successfully');
     }
 
     /**
@@ -98,9 +92,10 @@ class AddUserController extends Controller
     {
         $user = User::findOrFail($id);
         $task = Task::where('user_id', $user->id)->get();
+
         return DataTables::of($task)
             ->editColumn('created_at', function (Task $task) {
-                return $task->created_at->diffForHumans();
+                return date('d/m/Y H:i:s', strtotime($task->created_at));
             })
             ->editColumn('status', function (Task $task) {
                 if ($task->status == "Not Started") {
@@ -127,22 +122,22 @@ class AddUserController extends Controller
      */
     public function destroy($id)
     {
-//        $project = Project::all();
-//        dd($project->users()->where('user_id', $id)); die();
-        User::destroy($id);
+        $user = User::findOrFail($id);
+        $user->projects()->detach();
+
+        $comments = Comment::where('user_id', $id)->get();
+        foreach ($comments as $comment) {
+            $comment->delete();
+        }
+
         $tasks = Task::where('user_id', $id)->get();
-//        $projects = $project->users()->where('user_id', $id)->get();
-//        dd($projects); die();
-//        $projects->users()->detach();
         foreach ($tasks as $task) {
-            $comments = Comment::where(['task_id' => $task->id, 'user_id' => $id])->get();
-            foreach ($comments as $comment) {
-                $comment->delete();
-            }
             $task->user_id = 0;
             $task->status = 1;
             $task->save();
         }
+
+        User::destroy($id);
 
         return response()->json(["message" => 'User Deleted Successfully']);
     }

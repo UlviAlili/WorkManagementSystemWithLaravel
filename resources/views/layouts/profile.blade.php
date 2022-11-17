@@ -4,7 +4,7 @@
 
     <div class="card shadow mb-4">
         <div class="card-header py-3">
-            <h6 class="m-0 font-weight-bold float-left text-primary">@yield('title')</h6>
+            <small class="text-danger mt-2 float-left">* &nbsp;indicates a required field.</small>
             <h6 class="m-0 font-weight-bold float-right text-primary">
                 <a href="{{route('changePass')}}" class="btn btn-warning btn-sm">Change Password</a>
             </h6>
@@ -17,15 +17,15 @@
                 <div class="row">
                     <div class="col-md-12">
                         <div class="form-group">
-                            <label>Full Name</label>
-                            <input type="text" name="name" class="form-control"
+                            <label>Full Name<span style="color: red">*</span></label>
+                            <input type="text" name="name" class="form-control" id="name"
                                    value="{{\Illuminate\Support\Facades\Auth::user()->name}}">
                         </div>
                     </div>
 
                     <div class="col-md-12">
                         <div class="form-group">
-                            <label>Email</label>
+                            <label>Email<span style="color: red">*</span></label>
                             <input type="text" name="email" class="form-control"
                                    value="{{\Illuminate\Support\Facades\Auth::user()->email}}">
                         </div>
@@ -57,7 +57,20 @@
                     success: function (response) {
                         $('.myLoad').html('');
                         $('#mySubmit').prop('disabled', false);
-                        window.location.href = response.url;
+                        toastr.options =
+                            {
+                                "closeButton": true,
+                                "progressBar": true
+                            }
+                        if (response.hasOwnProperty('warning')) {
+                            toastr.warning(response.warning);
+                        } else {
+                            let x = document.getElementById("name").value;
+                            $('.name1').html('');
+                            $('.name1').append(x + ` <i class="fa fa-caret-down"></i>`);
+                            toastr.success(response.message);
+                        }
+                        $('#FrmUpdateProfile').find('.text-danger').remove();
                     },
                     error: function (response) {
                         $('#FrmUpdateProfile').find('.text-danger').remove();

@@ -18,7 +18,7 @@
                             </button>
                         </div>
                         <form method="post" class="FrmUpdateTask" enctype="multipart/form-data"
-                              data-url="{{route('admin.task.update',$task->id)}}">
+                              data-url="{{route('user.task.update',$task->id)}}">
                             @csrf
                             @method('PUT')
                             <div class="modal-body modal1">
@@ -32,9 +32,9 @@
                                         <input type="hidden" name="project" value="{{$task->project_id}}">
                                         <h6><b>Description</b></h6>
                                         <div class="form-group">
-                                                <textarea name="contents" class="form-control editor"
-                                                          rows="1" placeholder="Add a description">
-                                                    {!! $task->description !!}</textarea>
+                                                <textarea name="contents" class="form-control text1"
+                                                          rows="1"
+                                                          placeholder="Add a description">{!! $task->description !!}</textarea>
                                         </div>
                                         <br>
                                         <div class="card">
@@ -52,8 +52,7 @@
                                                                             <b>{{\App\Models\User::where('id',$comment->user_id)->first()->name}}</b>&nbsp;&nbsp;
                                                                             <small>{{$comment->created_at->diffForHumans()}}</small>
                                                                             @if($comment->user_id == Auth::user()->id)
-                                                                                {{-- <button class="DeleteComment btn btn-danger float-right" data-url="{{route('admin.comment.delete',$comment->id)}}" title="Delete">Delete</button>--}}
-                                                                                <a href="{{route('admin.comment.delete',$comment->id)}}"
+                                                                                <a href="{{route('user.comment.delete',$comment->id)}}"
                                                                                    title="Delete"
                                                                                    class="btn btn-sm btn-danger ml-1 float-right">Delete</a>
                                                                             @endif
@@ -96,22 +95,8 @@
                                                 <div class="col-md-4 float-left mt-2">
                                                     Assignee:
                                                 </div>
-                                                <div class="col-md-8 float-right">
-                                                    <select class="form-control" name="member">
-                                                        <option value="0" @if($task->user_id == 0) selected @endif>
-                                                            Unassigned
-                                                        </option>
-                                                        <option value="{{Auth::user()->id}}"
-                                                                @if($task->user_id == Auth::user()->id) selected @endif>
-                                                            {{Auth::user()->name}}
-                                                        </option>
-                                                        @foreach(\App\Models\Project::where('id',$task->project_id)->first()->users->pluck('id')->toArray() as $sel)
-                                                            <option value="{{$sel}}"
-                                                                    @if($task->user_id == $sel) selected @endif>
-                                                                {{\App\Models\User::where('id',$sel)->first()->name}}
-                                                            </option>
-                                                        @endforeach
-                                                    </select>
+                                                <div class="col-md-8 float-right mt-2">
+                                                    {{Auth::user()->name}}
                                                 </div>
                                             </div>
                                         </div>
@@ -135,12 +120,13 @@
                         </form>
                         <div class="modal-footer">
                             <div class="col-md-12">
-                                <form method="post" class="FrmComment" data-url="{{route('admin.comment',$task->id)}}">
+                                <form method="post" class="FrmComment"
+                                      data-url="{{route('user.comment',$task->id)}}">
                                     @csrf
 
                                     <div class="col-md-9 float-left">
                                         <div class="form-group">
-                                                        <textarea name="comments" class="form-control editor text"
+                                                        <textarea name="comments" class="form-control text1 text"
                                                                   rows="2" placeholder="Add a comment"></textarea>
                                         </div>
                                     </div>
@@ -151,7 +137,6 @@
                                             </button>
                                         </div>
                                     </div>
-
                                 </form>
                             </div>
                         </div>
@@ -160,13 +145,17 @@
             </div>
         </div>
 
-        <div class="col-md-2 float-right mt-3">
-            <form method="post" class="FrmDeleteTask" data-url="{{route('admin.task.destroy',$task->id)}}">
-                @method('DELETE')
-                <button type="submit" class="btn btn-light" title="Delete">
-                    <i class="fa fa-times text-danger"></i>
-                </button>
-            </form>
-        </div>
+        @if($task->admin_id == Auth::user()->id)
+            <div class="col-md-2 float-right mt-3">
+                <form method="post" class="FrmDeleteTask" data-url="{{route('user.task.destroy',$task->id)}}">
+                    @method('DELETE')
+                    <button type="submit" class="btn btn-light" title="Delete">
+                        <i class="fa fa-times text-danger"></i>
+                    </button>
+                </form>
+            </div>
+        @endif
     </div>
 </div>
+
+

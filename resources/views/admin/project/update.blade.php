@@ -3,15 +3,14 @@
 @section('content')
 
     <div class="card shadow mb-4">
-        <div class="card-header py-3">
-            <h6 class="m-0 font-weight-bold float-left text-primary">@yield('title')</h6>
+
+        <div class="card-header">
             <h6 class="m-0 font-weight-bold float-right text-primary">
                 <a href="{{route('admin.project.index')}}" class="btn btn-primary btn-sm">All Projects</a></h6>
         </div>
         <div class="card-body">
 
-            <form method="post" id="FrmUpdateProject"
-                  enctype="multipart/form-data">
+            <form method="post" id="FrmUpdateProject" enctype="multipart/form-data">
                 @csrf
                 @method('PUT')
 
@@ -26,7 +25,7 @@
                     <div class="col-md-6">
                         <div class="form-group">
                             <label>Project Status</label>
-                            <select name="status" class="form-control" required>
+                            <select name="status" class="form-control">
                                 <option value="1" @if($project->status == 'Not Started') selected @endif>Not
                                     Started
                                 </option>
@@ -80,7 +79,7 @@
     <script>
         $(document).ready(function () {
             $('#editor').summernote(
-                {'height': 300}
+                {'height': 180}
             );
         });
     </script>

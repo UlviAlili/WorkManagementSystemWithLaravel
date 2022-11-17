@@ -24,10 +24,11 @@ class TaskRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'title' => 'required|min:3|max:30',
+            'title' => 'required|max:50',
             'project' => 'required',
             'member' => 'max:255',
-            'contents' => 'required|min:3|max:255',
+            'contents' => 'max:255',
+            'status' => 'max:255'
         ];
     }
 

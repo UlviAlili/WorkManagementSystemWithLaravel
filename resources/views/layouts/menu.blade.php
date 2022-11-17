@@ -18,7 +18,7 @@
             <hr class="sidebar-divider my-0">
 
             <!-- Nav Item - Dashboard -->
-            <li class="nav-item @if(Request::segment(2) == 'panel') active @endif">
+            <li class="nav-item @if(Request::segment(1) == 'admin' && Request::segment(2) == 'panel') active @endif">
                 <a class="nav-link" href="{{route('admin.dashboard')}}">
                     <i class="fas fa-fw fa-solar-panel"></i>
                     <span>Panel</span></a>
@@ -33,75 +33,48 @@
             </div>
 
             <!-- Nav Item - Pages Collapse Menu -->
-            <li class="nav-item">
-                <a class="nav-link @if(Request::segment(2) == 'project') in @else collapsed @endif" href="#"
+            <li class="nav-item @if(Request::segment(1) == 'admin' && Request::segment(2) == 'project') active @endif">
+                <a class="nav-link @if(Request::segment(1) == 'admin' && Request::segment(2) == 'project') in @else collapsed @endif"
+                   href="#"
                    data-toggle="collapse" data-target="#collapseProject"
                    aria-expanded="true" aria-controls="collapseProject">
                     <i class="fas fa-fw fa-layer-group"></i>
                     <span>Projects</span>
                 </a>
-                <div id="collapseProject" class="collapse @if(Request::segment(2) == 'project') show @endif"
+                <div id="collapseProject"
+                     class="collapse @if(Request::segment(1) == 'admin' && Request::segment(2) == 'project') show @endif"
                      aria-labelledby="headingProject" data-parent="#accordionSidebar">
                     <div class="bg-white py-2 collapse-inner rounded">
                         <h6 class="collapse-header">Project Processing:</h6>
-                        <a class="collapse-item @if(Request::segment(2) == 'project' && !Request::segment(3)) active @endif"
-                           href="{{route('admin.project.index')}}">All Project</a>
-                        <a class="collapse-item @if(Request::segment(2) == 'project' && Request::segment(3) == 'create') active @endif"
+                        <a class="collapse-item @if(Request::segment(1) == 'admin' && Request::segment(2) == 'project' && !Request::segment(3)) active @endif"
+                           href="{{route('admin.project.index')}}">All Projects</a>
+                        <a class="collapse-item @if(Request::segment(1) == 'admin' && Request::segment(2) == 'project' && Request::segment(3) == 'create') active @endif"
                            href="{{route('admin.project.create')}}">Create New Project</a>
                     </div>
                 </div>
             </li>
 
-            <!-- Nav Item - Utilities Collapse Menu -->
-            <li class="nav-item">
-                <a class="nav-link @if(Request::segment(2) == 'task') in @else collapsed @endif" href="#"
-                   data-toggle="collapse" data-target="#collapseTask"
-                   aria-expanded="true" aria-controls="collapseTask">
-                    <i class="fas fa-fw fa-tasks"></i>
-                    <span>Tasks</span>
-                </a>
-                <div id="collapseTask"
-                     class="collapse @if(Request::segment(2) == 'task' or Request::segment(2) == 'tasks') show @endif"
-                     aria-labelledby="headingTask"
-                     data-parent="#accordionSidebar">
-                    <div class="bg-white py-2 collapse-inner rounded">
-                        <h6 class="collapse-header">Task Processing:</h6>
-                        <a class="collapse-item @if(Request::segment(2) == 'task' && !Request::segment(3)) active @endif"
-                           href="{{route('admin.task.index')}}">All Tasks</a>
-                        <a class="collapse-item @if((Request::segment(2) == 'task' && Request::segment(3) == 'createTask')
-                           or (Request::segment(2) == 'tasks' && Request::segment(3) == 'selectProject')) active @endif"
-                           href="{{route('admin.select-project')}}">Add New Task</a>
-                    </div>
-                </div>
-            </li>
-
-            <li class="nav-item">
-                <a class="nav-link @if(Request::segment(2) == 'addUser') in @else collapsed @endif" href="#"
+            <li class="nav-item @if(Request::segment(1) == 'admin' && Request::segment(2) == 'addUser') active @endif">
+                <a class="nav-link @if(Request::segment(1) == 'admin' && Request::segment(2) == 'addUser') in @else collapsed @endif"
+                   href="#"
                    data-toggle="collapse" data-target="#collapseTeam"
                    aria-expanded="true" aria-controls="collapseTeam">
                     <i class="fas fa-fw fa-users"></i>
                     <span>Team</span>
                 </a>
-                <div id="collapseTeam" class="collapse @if(Request::segment(2) == 'addUser') show @endif"
+                <div id="collapseTeam"
+                     class="collapse @if(Request::segment(1) == 'admin' && Request::segment(2) == 'addUser') show @endif"
                      aria-labelledby="headingTeam"
                      data-parent="#accordionSidebar">
                     <div class="bg-white py-2 collapse-inner rounded">
                         <h6 class="collapse-header">Team Processing:</h6>
-                        <a class="collapse-item @if(Request::segment(2) == 'addUser' && !Request::segment(3)) active @endif"
+                        <a class="collapse-item @if(Request::segment(1) == 'admin' && Request::segment(2) == 'addUser' && !Request::segment(3)) active @endif"
                            href="{{route('admin.addUser.index')}}">All Team Members</a>
-                        <a class="collapse-item @if(Request::segment(2) == 'addUser' && Request::segment(3) == 'create') active @endif"
+                        <a class="collapse-item @if(Request::segment(1) == 'admin' && Request::segment(2) == 'addUser' && Request::segment(3) == 'create') active @endif"
                            href="{{route('admin.addUser.create')}}">Add New User</a>
                     </div>
                 </div>
             </li>
-
-            <!-- Divider -->
-            <hr class="sidebar-divider d-none d-md-block">
-
-            <!-- Sidebar Toggler (Sidebar) -->
-            <div class="text-center d-none d-md-inline">
-                <button class="rounded-circle border-0" id="sidebarToggle"></button>
-            </div>
 
         @elseif(\Illuminate\Support\Facades\Auth::user()->status == 'user')
 
@@ -115,7 +88,7 @@
             <hr class="sidebar-divider my-0">
 
             <!-- Nav Item - Dashboard -->
-            <li class="nav-item @if(Request::segment(2) == 'panel') active @endif">
+            <li class="nav-item @if(Request::segment(1) == 'user' && Request::segment(2) == 'panel') active @endif">
                 <a class="nav-link" href="{{route('user.dashboard')}}">
                     <i class="fas fa-fw fa-solar-panel"></i>
                     <span>Panel</span></a>
@@ -130,13 +103,21 @@
             </div>
 
             <!-- Nav Item - Dashboard -->
-            <li class="nav-item @if(Request::segment(2) == 'task') active @endif">
-                <a class="nav-link" href="{{route('user.task.index')}}">
+            <li class="nav-item @if(Request::segment(1) == 'user' && Request::segment(2) == 'project') active @endif">
+                <a class="nav-link" href="{{route('user.project.index')}}">
                     <i class="fas fa-fw fa-tasks"></i>
-                    <span>Tasks</span></a>
+                    <span>Projects</span></a>
             </li>
 
         @endif
+
+        <!-- Divider -->
+        <hr class="sidebar-divider d-none d-md-block">
+
+        <!-- Sidebar Toggler (Sidebar) -->
+        <div class="text-center d-none d-md-inline">
+            <button class="rounded-circle border-0" id="sidebarToggle"></button>
+        </div>
 
     </ul>
     <!-- End of Sidebar -->
@@ -162,9 +143,9 @@
                     <li class="nav-item dropdown no-arrow">
                         <a class="nav-link dropdown-toggle" href="#" id="userDropdown" role="button"
                            data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                            <span
-                                class="mr-2 d-none d-lg-inline text-black-50"><b>{{\Illuminate\Support\Facades\Auth::user()->name}} <i
-                                        class="fa fa-caret-down"></i> </b></span>
+                            <span class="mr-2 d-none d-lg-inline text-black-50">
+                                <b class="name1">{{\Illuminate\Support\Facades\Auth::user()->name}}
+                                    <i class="fa fa-caret-down"></i> </b></span>
                         </a>
                         <!-- Dropdown - User Information -->
                         <div class="dropdown-menu dropdown-menu-right shadow animated--grow-in"
@@ -183,7 +164,7 @@
                 </ul>
             </nav>
 
-            <div class="container-fluid">
+            <div class="container-fluid project-scroll">
 
                 <!-- Page Heading -->
                 <div class="d-sm-flex align-items-center justify-content-between mb-4">

@@ -17,20 +17,18 @@ class ProfileController extends Controller
 
     public function postProfile(ProfileRequest $request, $id)
     {
-        if ($request->name == Auth::user()->name && $request->email == Auth::user()->email) {
-
-            session()->flash('warning', "Profile doesn't Change");
-            return response()->json(['url' => route('profile')]);
-//            return redirect()->route('profile')->with('warning', "Profile doesn't Change");
+        $validated = $request->validated();
+        if ($validated['name'] == Auth::user()->name && $validated['email'] == Auth::user()->email) {
+            return response()->json(["warning" => "Profile doesn't Change"]);
         }
-        $user = User::findOrFail($id);
-        $user->name = $request->name;
-        $user->email = $request->email;
-        $user->save();
 
-        session()->flash('message', 'Profile Update Successfully');
-        return response()->json(['url' => route('profile')]);
-//        return redirect()->route('profile')->with('message', 'Profile update Successfully');
+        $user = User::findOrFail($id);
+        $user->update([
+            'name' => $validated['name'],
+            'email' => $validated['email']
+        ]);
+
+        return response()->json(["message" => "Profile Update Successfully"]);
     }
 
     public function changePass()
@@ -41,20 +39,16 @@ class ProfileController extends Controller
     public function postChangePass(ChangePassRequest $request, $id)
     {
         if (Hash::check($request->oldPassword, Auth::user()->password)) {
-            $request->validate([
-                'password' => 'required|min:3|confirmed'
-            ]);
+            $validated = $request->validate(['password' => 'required|min:3|confirmed']);
             $user = User::findOrFail($id);
-            $user->password = bcrypt($request->password);
-            $user->save();
+            $user->update([
+                'password' => bcrypt($validated['password'])
+            ]);
 
-            session()->flash('message', 'Password Change Successfully');
-            return response()->json(['url' => route('profile')]);
-//            return redirect()->route('profile')->with('message', 'Password Change Successfully');
+            return response()->json(["message" => "Password Change Successfully"]);
         } else {
-            session()->flash('error', 'Old Password is InCorrect');
-            return response()->json(['url' => route('changePass')]);
-//            return redirect()->route('changePass')->with('error', 'Old Password is inCorrect');
+
+            return response()->json(["error" => "Old Password is inCorrect"]);
         }
     }
 }

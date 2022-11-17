@@ -4,28 +4,19 @@
 
     <div class="card shadow mb-4">
         <div class="card-header py-3">
-            <h6 class="m-0 font-weight-bold float-left text-primary">@yield('title')</h6>
+            <small class="text-danger mt-2 float-left">* &nbsp;indicates a required field.</small>
             <h6 class="m-0 font-weight-bold float-right text-primary">
                 <a href="{{route('admin.project.index')}}" class="btn btn-primary btn-sm">All Projects</a></h6>
         </div>
-
         <div class="card-body">
-            @if($errors->any())
-                <div class="alert alert-danger">
-                    @foreach($errors->all() as $error)
-                        <li>{{$error}}</li>
-                    @endforeach
-                </div>
-            @endif
 
-            <form method="post" id="FrmAddProject"
-                  enctype="multipart/form-data">
+            <form method="post" id="FrmAddProject" enctype="multipart/form-data">
                 @csrf
 
                 <div class="row">
                     <div class="col-md-6">
                         <div class="form-group">
-                            <label>Project Name</label>
+                            <label>Project Name<span style="color: red">*</span></label>
                             <input type="text" name="title" class="form-control">
                         </div>
                     </div>
@@ -79,7 +70,7 @@
     <script>
         $(document).ready(function () {
             $('#editor').summernote(
-                {'height': 200}
+                {'height': 180}
             );
         });
     </script>
@@ -96,7 +87,7 @@
                     data: myData,
                     success: function (response) {
                         $('.myLoad').html('');
-                        $('#mySubmit').prop('Disabled', false);
+                        $('#mySubmit').prop('disabled', false);
                         window.location.href = response.url;
                     },
                     error: function (response) {

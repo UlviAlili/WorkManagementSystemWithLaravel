@@ -23,14 +23,12 @@ class ProjectController extends Controller
      */
     public function index()
     {
-        $projects = Project::where('admin_id', Auth::user()->id)->orderBy('created_at', 'desc')->get();
-
-        return view('admin.project.index', compact('projects'));
+        return view('admin.project.index');
     }
 
     public function indexDataTable()
     {
-        $projects = Project::where('admin_id', Auth::user()->id)->orderBy('created_at', 'desc')->get();
+        $projects = Project::where('admin_id', Auth::user()->id)->get();
 
         return DataTables::of($projects)
             ->editColumn('status', function (Project $project) {
@@ -43,16 +41,19 @@ class ProjectController extends Controller
                 }
                 return "<div class ='" . $status . " text-light'>" . $project->status . "</div>";
             })
+            ->editColumn('name', function (Project $project) {
+                return '<a href="' . route('admin.project.show', $project->id) . '">' . $project->name . "</a>";
+            })
             ->editColumn('operations', 'admin/project/operations')
-            ->rawColumns(['status', 'description', 'operations'])
+            ->rawColumns(['status', 'operations', 'name'])
             ->addColumn('user', function (Project $project) {
-                return $project->team_members;
+                return $project->users()->count();
             })
             ->addColumn('task', function (Project $project) {
                 return $project->tasks()->count();
             })
             ->editColumn('created_at', function (Project $project) {
-                return $project->created_at->diffForHumans();
+                return date('d/m/Y H:i:s', strtotime($project->created_at));
             })
             ->make(true);
     }
@@ -64,8 +65,7 @@ class ProjectController extends Controller
      */
     public function create()
     {
-        $id = Auth::user()->id;
-        $users = User::where('admin_id', $id)->orderBy('created_at')->get();
+        $users = User::where('admin_id', Auth::user()->id)->orderBy('created_at')->get();
 
         return view('admin.project.create', compact('users'));
     }
@@ -84,7 +84,7 @@ class ProjectController extends Controller
             'admin_id' => Auth::user()->id,
             'status' => $validated['status'],
             'team_members' => !isset($validated['member']) ? 0 : count($validated['member']),
-            'description' => $validated['contents']
+            'description' => !isset($validated['contents']) ? '' : $validated['contents']
         ]);
         if (isset($validated['member'])) {
             $project->users()->sync($validated['member']);
@@ -92,7 +92,6 @@ class ProjectController extends Controller
 
         session()->flash('message', 'Project Create Successfully');
         return response()->json(['url' => route('admin.project.index')]);
-//        return redirect()->route('admin.project.index')->with('message', 'Project Create Successfully');
     }
 
     /**
@@ -103,41 +102,13 @@ class ProjectController extends Controller
      */
     public function show($id)
     {
-        $user = User::all();
+        $user = User::where('admin_id', Auth::user()->id)->get();
         $project = Project::findOrFail($id);
+        $select = $project->users->pluck('id')->toArray();
 
-        return view('admin.project.show', compact('project', 'user'));
-    }
+//        return response()->json(['view' => view('admin.project.show', compact('project'))->render()]);
 
-    public function showDataTable($id)
-    {
-        $user = User::all();
-        $project = Project::findOrFail($id);
-        $tasks = $project->tasks()->get();
-        return DataTables::of($tasks)
-            ->editColumn('created_at', function (Task $task) {
-                return $task->created_at->diffForHumans();
-            })
-            ->editColumn('status', function (Task $task) {
-                if ($task->status == "Not Started") {
-                    $status = 'badge bg-primary';
-                } elseif ($task->status == "In Progress") {
-                    $status = 'badge bg-warning';
-                } elseif ($task->status == "Done") {
-                    $status = 'badge bg-success';
-                }
-                return "<div class ='" . $status . " text-light'>" . $task->status . "</div>";
-            })
-            ->editColumn('user', function (Task $task) {
-                if (User::where('id', $task->user_id)->first() == null) {
-                    $name = '--';
-                } else {
-                    $name = User::where('id', $task->user_id)->first()->name;
-                }
-                return $name;
-            })
-            ->rawColumns(['status', 'description'])
-            ->make(true);
+        return view('admin.project.show', compact('project', 'user', 'select'));
     }
 
     /**
@@ -148,8 +119,7 @@ class ProjectController extends Controller
      */
     public function edit($id)
     {
-        $id2 = Auth::user()->id;
-        $users = User::where('admin_id', $id2)->orderBy('created_at')->get();
+        $users = User::where('admin_id', Auth::user()->id)->orderBy('created_at')->get();
         $project = Project::findOrFail($id);
         $select = $project->users()->get()->pluck('id')->toArray();
 
@@ -163,6 +133,7 @@ class ProjectController extends Controller
      * @param int $id
      * @return JsonResponse
      */
+
     public function update(ProjectRequest $request, $id)
     {
         $validated = $request->validated();
@@ -172,7 +143,7 @@ class ProjectController extends Controller
             'admin_id' => Auth::user()->id,
             'status' => $validated['status'],
             'team_members' => !isset($validated['member']) ? 0 : count($validated['member']),
-            'description' => $validated['contents']
+            'description' => !isset($validated['contents']) ? '' : $validated['contents']
         ]);
         if (isset($validated['member'])) {
             $project->users()->sync($validated['member']);
@@ -181,8 +152,7 @@ class ProjectController extends Controller
         }
 
         session()->flash('message', 'Project Update Successfully');
-        return response()->json(['url' => route('admin.project.index')]);
-//        return redirect()->route('admin.project.index')->with('message', 'Project Update Successfully');
+        return response()->json(['url' => route('admin.project.show', $id)]);
     }
 
     /**
@@ -194,14 +164,65 @@ class ProjectController extends Controller
     public function destroy($id)
     {
         $project = Project::findOrFail($id);
+        $project->destroy($id);
+
+        return response()->json(["message" => 'Project Move to Trash']);
+    }
+
+
+    // Start Trash
+    public function trashed()
+    {
+        return view('admin.project.trashed');
+    }
+
+    public function trashedDataTable()
+    {
+        $projects = Project::onlyTrashed()->where('admin_id', Auth::user()->id)->get();
+        return DataTables::of($projects)
+            ->editColumn('status', function (Project $project) {
+                if ($project->status == "Not Started") {
+                    $status = 'badge bg-primary';
+                } elseif ($project->status == "In Progress") {
+                    $status = 'badge bg-warning';
+                } elseif ($project->status == "Done") {
+                    $status = 'badge bg-success';
+                }
+                return "<div class ='" . $status . " text-light'>" . $project->status . "</div>";
+            })
+            ->addColumn('user', function (Project $project) {
+                return $project->team_members;
+            })
+            ->addColumn('task', function (Project $project) {
+                return $project->tasks()->count();
+            })
+            ->editColumn('operations', 'admin/project/trashedOperations')
+            ->rawColumns(['status', 'operations'])
+            ->editColumn('deleted_at', function (Project $project) {
+                return date('d/m/Y H:i:s', strtotime($project->deleted_at));
+            })
+            ->make(true);
+    }
+
+    public function restoreProject($id)
+    {
+        Project::onlyTrashed()->findOrFail($id)->restore();
+
+        return response()->json(["message" => 'Project Restore']);
+    }
+
+    public function hardDelete($id)
+    {
+        $project = Project::onlyTrashed()->findOrFail($id);
         $tasks = Task::where('project_id', $project->id)->get();
         foreach ($tasks as $task) {
             $task->delete();
         }
         $project->users()->detach();
-        $project->destroy($id);
+        $project->forceDelete();
 
-        return response()->json(["message" => 'Project Deleted Successfully']);
-//        return redirect()->back()->with('message', 'Project Deleted Successfully');
+        return response()->json(["message" => 'Project Delete Permanently']);
     }
+    // End Trash
+
 }
