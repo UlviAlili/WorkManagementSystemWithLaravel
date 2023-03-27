@@ -1,6 +1,8 @@
 ## _Work Management System_
 Work Management System using Laravel 9 and MySQL Database.
 
+[Click Here to see this project's video](https://youtu.be/K-Gfj2_VEYQ)
+
 # ⚙️ Technology Used
 1. HTML5
 2. CSS3
@@ -23,30 +25,3 @@ Work Management System using Laravel 9 and MySQL Database.
 8. You can log in like a User by logging in with the email and password of the User created by the admin.
 9. User can view the Projects which he has been added.
 10. User can create a new task and add a comment to the Task.
-
-## 📖  How to Download the Project and Run on your PC?
-
-### Pre-Requisites:
-
-1. Download and Install XAMPP
-
-[Click Here to Download](https://www.apachefriends.org/index.html)
-
-2. Install any Text Editor (Sublime Text or Visual Studio Code or Atom or PhpStorm)
-
-### Installation
-
-1. Download as as Zip or Clone this project
-2. Move this project to Root Directory
-```
-Local Disc C: -> xampp -> htdocs -> 'this project'
-```
-*Local Disk C is the location where xampp was installed*
-
-3. Open XAMPP Control Panel and Start 'Apache' and 'MySQL'
-
-4. Import Database
-
-a. Open 'phpmyadmin' in your browser
-b. Create a Database
-c. Import the SQL file provided with this project
